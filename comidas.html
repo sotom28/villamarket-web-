@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Villa Markets | Comidas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 para alertas mejoradas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Favicon -->
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <style>
+        .text-green {
+            color: #2d8f3c;
+        }
+        .bg-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #1a5e24;
+            color: white;
+        }
+        .food-card {
+            transition: transform 0.3s;
+            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .food-card img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .filter-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .badge-special {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .cart-badge {
+            position: relative;
+            top: -8px;
+            right: -5px;
+        }
+        .ingredients-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .ingredients-list li {
+            padding: 2px 0;
+        }
+        .ingredients-list li i {
+            color: #2d8f3c;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="home.html">
+                <img src="img/logo.png" alt="Villa Markets" width="40" height="40" class="rounded">
+                Villa Markets
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nav" class="collapse navbar-collapse">
+                <!-- El menú se cargará dinámicamente según el estado de la sesión desde main.js -->
+                <ul id="menu-opciones" class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="minimarkets.html">Minimarkets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="comidas.html">Comidas</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="carrito.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count" class="badge rounded-pill bg-danger cart-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="registro.html">Registrarse</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container py-4">
+        <h1 class="text-green mb-4">Catálogo de Comidas Preparadas</h1>
+        
+        <!-- Filtros -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="categoria" class="form-label">
+                        <i class="fas fa-tags me-1 text-green"></i> Categoría
+                    </label>
+                    <select class="form-select" id="categoria">
+                        <option value="todos" selected>Todas las categorías</option>
+                        <option value="plato-principal">Platos principales</option>
+                        <option value="entrada">Entradas</option>
+                        <option value="postre">Postres</option>
+                        <option value="vegetariano">Vegetarianos</option>
+                        <option value="vegano">Veganos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="orden" class="form-label">
+                        <i class="fas fa-sort me-1 text-green"></i> Ordenar por
+                    </label>
+                    <select class="form-select" id="orden">
+                        <option value="nombre" selected>Nombre A-Z</option>
+                        <option value="precio-asc">Precio: Menor a mayor</option>
+                        <option value="precio-desc">Precio: Mayor a menor</option>
+                        <option value="popular">Más populares</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="minimarket" class="form-label">
+                        <i class="fas fa-store-alt me-1 text-green"></i> Minimarket
+                    </label>
+                    <select class="form-select" id="minimarket">
+                        <option value="todos" selected>Todos los minimarkets</option>
+                        <option value="Villa Central">Villa Central</option>
+                        <option value="Villa Norte">Villa Norte</option>
+                        <option value="Villa Sur">Villa Sur</option>
+                        <option value="Villa Este">Villa Este</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="busqueda" class="form-label">
+                        <i class="fas fa-search me-1 text-green"></i> Buscar
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="busqueda" placeholder="Buscar platos..." autocomplete="off">
+                        <button class="btn btn-green" type="button" onclick="filtrarComidas()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="limpiarFiltros()">
+                                <i class="fas fa-undo me-1"></i> Limpiar filtros
+                            </button>
+                        </div>
+                        <div id="comidas-contador" class="text-muted small">
+                            Mostrando todos los platos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comidas -->
+        <div class="row" id="comidas-container">
+            <!-- Las comidas se cargan dinámicamente con JavaScript -->
+        </div>
+        
+        <!-- Paginación -->
+        <nav class="my-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Siguiente</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Villa Markets</h5>
+                    <p>Tu plataforma para mini markets locales en todo Chile.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="minimarkets.html" class="text-white">Minimarkets</a></li>
+                        <li><a href="productos.html" class="text-white">Catálogo</a></li>
+                        <li><a href="soporte.html" class="text-white">Soporte</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contáctanos</h5>
+                    <p>contacto@villamarkets.cl</p>
+                    <p>+56 9 1234 5678</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center small mb-0">© 2025 Villa Markets. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script principal del sitio -->
+    <script src="main.js"></script>
+
+    <script>
+        // Comidas de ejemplo
+        const comidas = [
+            {
+                id: 1,
+                nombre: 'Lasaña de Carne',
+                precio: 6990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/3480/3480617.png',
+                descripcion: 'Deliciosa lasaña casera con carne molida y salsa bechamel.',
+                categoria: 'plato-principal',
+                minimarket: 'Villa Central',
+                ingredientes: ['Pasta', 'Carne molida', 'Salsa de tomate', 'Queso', 'Bechamel'],
+                calorias: 450,
+                preparacion: '25 minutos',
+                popular: true
+            },
+            {
+                id: 2,
+                nombre: 'Ensalada César',
+                precio: 4990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1147/1147805.png',
+                descripcion: 'Clásica ensalada césar con pollo grillado, crutones y aderezo casero.',
+                categoria: 'entrada',
+                minimarket: 'Villa Norte',
+                ingredientes: ['Lechuga romana', 'Pollo', 'Crutones', 'Queso parmesano', 'Aderezo césar'],
+                calorias: 320,
+                preparacion: '15 minutos',
+                popular: true
+            },
+            {
+                id: 3,
+                nombre: 'Risotto de Hongos',
+                precio: 5990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/2718/2718224.png',
+                descripcion: 'Cremoso risotto preparado con hongos silvestres y queso parmesano.',
+                categoria: 'plato-principal',
+                minimarket: 'Villa Este',
+                ingredientes: ['Arroz arbóreo', 'Hongos', 'Caldo de verduras', 'Queso parmesano', 'Vino blanco'],
+                calorias: 380,
+                preparacion: '30 minutos',
+                vegetariano: true
+            },
+            {
+                id: 4,
+                nombre: 'Tiramisú',
+                precio: 3990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/2431/2431518.png',
+                descripcion: 'Auténtico postre italiano con capas de bizcocho, café y crema de mascarpone.',
+                categoria: 'postre',
+                minimarket: 'Villa Sur',
+                ingredientes: ['Bizcochos', 'Café', 'Queso mascarpone', 'Cacao en polvo', 'Azúcar'],
+                calorias: 320,
+                preparacion: '15 minutos + refrigeración',
+                popular: true
+            },
+            {
+                id: 5,
+                nombre: 'Curry de Garbanzos',
+                precio: 4590,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/2276/2276931.png',
+                descripcion: 'Curry vegano de garbanzos con leche de coco y especias hindúes.',
+                categoria: 'plato-principal',
+                minimarket: 'Villa Norte',
+                ingredientes: ['Garbanzos', 'Leche de coco', 'Tomate', 'Cebolla', 'Especias'],
+                calorias: 350,
+                preparacion: '20 minutos',
+                vegano: true
+            },
+            {
+                id: 6,
+                nombre: 'Sopa de Tomate',
+                precio: 3290,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/3480/3480815.png',
+                descripcion: 'Sopa casera de tomate con albahaca fresca y un toque de crema.',
+                categoria: 'entrada',
+                minimarket: 'Villa Central',
+                ingredientes: ['Tomates', 'Caldo de verduras', 'Cebolla', 'Albahaca', 'Crema'],
+                calorias: 220,
+                preparacion: '25 minutos',
+                vegetariano: true
+            }
+        ];
+
+        // Carrito de compras - usar la misma clave que en main.js
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        /**
+         * Actualizar contador del carrito
+         */
+        function actualizarContadorCarrito() {
+            const contador = document.getElementById('cart-count');
+            if (!contador) return;
+            
+            contador.textContent = carrito.reduce((total, item) => total + item.cantidad, 0);
+        }
+        
+        /**
+         * Renderiza las comidas en el contenedor
+         * @param {Array} comidasAMostrar - Lista de comidas a mostrar
+         */
+        function renderizarComidas(comidasAMostrar) {
+            const contenedor = document.getElementById('comidas-container');
+            if (!contenedor) return;
+            
+            contenedor.innerHTML = '';
+            
+            if (comidasAMostrar.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No se encontraron platos que coincidan con los criterios de búsqueda.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            comidasAMostrar.forEach(comida => {
+                const col = document.createElement('div');
+                col.className = 'col-md-6 col-lg-4 mb-4';
+                
+                let badgeHtml = '';
+                if (comida.vegetariano) {
+                    badgeHtml = '<span class="badge bg-success badge-special">Vegetariano</span>';
+                } else if (comida.vegano) {
+                    badgeHtml = '<span class="badge bg-success badge-special">Vegano</span>';
+                } else if (comida.popular) {
+                    badgeHtml = '<span class="badge bg-warning text-dark badge-special">Popular</span>';
+                }
+                
+                col.innerHTML = `
+                    <div class="card food-card">
+                        ${badgeHtml}
+                        <img src="${comida.imagen}" class="card-img-top" alt="${comida.nombre}">
+                        <div class="card-body">
+                            <h5 class="card-title">${comida.nombre}</h5>
+                            <p class="card-text text-muted small">${comida.descripcion}</p>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-store-alt me-1"></i> ${comida.minimarket}
+                            </p>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-clock me-1"></i> ${comida.preparacion}
+                                <span class="ms-2"><i class="fas fa-fire me-1"></i> ${comida.calorias} cal</span>
+                            </p>
+                            <div class="mt-3">
+                                <p class="mb-1 fw-bold small">Ingredientes principales:</p>
+                                <ul class="ingredients-list small">
+                                    ${comida.ingredientes.map(ingrediente => 
+                                        `<li><i class="fas fa-check-circle"></i> ${ingrediente}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="fw-bold text-green">$${comida.precio.toLocaleString('es-CL')}</span>
+                                <button onclick="agregarComidaAlCarrito(${comida.id})" class="btn btn-green btn-sm">
+                                    <i class="fas fa-cart-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                contenedor.appendChild(col);
+            });
+
+            // Actualizar contador
+            actualizarContadorComidas(comidasAMostrar.length);
+        }
+        
+        /**
+         * Filtra las comidas según los criterios seleccionados
+         */
+        function filtrarComidas() {
+            const categoria = document.getElementById('categoria').value;
+            const orden = document.getElementById('orden').value;
+            const minimarket = document.getElementById('minimarket').value;
+            const busqueda = document.getElementById('busqueda').value.toLowerCase().trim();
+            
+            let comidasFiltradas = [...comidas];
+            
+            // Filtrar por categoría
+            if (categoria !== 'todos') {
+                if (categoria === 'vegetariano') {
+                    comidasFiltradas = comidasFiltradas.filter(c => c.vegetariano === true);
+                } else if (categoria === 'vegano') {
+                    comidasFiltradas = comidasFiltradas.filter(c => c.vegano === true);
+                } else {
+                    comidasFiltradas = comidasFiltradas.filter(c => c.categoria === categoria);
+                }
+            }
+            
+            // Filtrar por minimarket
+            if (minimarket !== 'todos') {
+                comidasFiltradas = comidasFiltradas.filter(c => c.minimarket === minimarket);
+            }
+            
+            // Filtrar por búsqueda
+            if (busqueda) {
+                comidasFiltradas = comidasFiltradas.filter(c => 
+                    c.nombre.toLowerCase().includes(busqueda) || 
+                    c.descripcion.toLowerCase().includes(busqueda) ||
+                    c.categoria.toLowerCase().includes(busqueda) ||
+                    c.ingredientes.some(i => i.toLowerCase().includes(busqueda))
+                );
+            }
+            
+            // Ordenar
+            switch(orden) {
+                case 'nombre':
+                    comidasFiltradas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    break;
+                case 'precio-asc':
+                    comidasFiltradas.sort((a, b) => a.precio - b.precio);
+                    break;
+                case 'precio-desc':
+                    comidasFiltradas.sort((a, b) => b.precio - a.precio);
+                    break;
+                case 'popular':
+                    comidasFiltradas.sort((a, b) => (b.popular === true) - (a.popular === true));
+                    break;
+            }
+            
+            renderizarComidas(comidasFiltradas);
+        }
+        
+        /**
+         * Agregar una comida al carrito
+         * @param {number} comidaId - ID de la comida
+         */
+        function agregarComidaAlCarrito(comidaId) {
+            const comida = comidas.find(c => c.id === comidaId);
+            if (!comida) return;
+            
+            // Buscar si ya está en el carrito
+            const itemIndex = carrito.findIndex(item => 
+                item.id === comidaId && item.tipo === 'comida'
+            );
+            
+            if (itemIndex >= 0) {
+                // Ya existe en el carrito, aumentar cantidad
+                carrito[itemIndex].cantidad++;
+            } else {
+                // Nuevo item
+                carrito.push({
+                    id: comida.id,
+                    nombre: comida.nombre,
+                    precio: comida.precio,
+                    imagen: comida.imagen,
+                    cantidad: 1,
+                    minimarket: comida.minimarket,
+                    tipo: 'comida',
+                    categoria: comida.categoria,
+                    ingredientes: comida.ingredientes.join(', '),
+                    preparacion: comida.preparacion,
+                    calorias: comida.calorias
+                });
+            }
+            
+            // Guardar en localStorage - Usamos ambos para compatibilidad
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            localStorage.setItem('carritoVillaMarkets', JSON.stringify(carrito));
+            
+            // Actualizar interfaz
+            actualizarContadorCarrito();
+            
+            // Mostrar mensaje con SweetAlert2
+            Swal.fire({
+                icon: 'success',
+                title: '¡Comida agregada!',
+                text: `${comida.nombre} se ha añadido a tu carrito`,
+                timer: 1500,
+                timerProgressBar: true,
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false
+            });
+        }
+        
+        /**
+         * Limpia todos los filtros y muestra todas las comidas
+         */
+        function limpiarFiltros() {
+            // Resetear selectores
+            document.getElementById('categoria').value = 'todos';
+            document.getElementById('orden').value = 'nombre';
+            document.getElementById('minimarket').value = 'todos';
+            document.getElementById('busqueda').value = '';
+            
+            // Volver a mostrar todas las comidas
+            renderizarComidas(comidas);
+            
+            // Notificar al usuario
+            Swal.fire({
+                icon: 'info',
+                title: 'Filtros reseteados',
+                text: 'Se han eliminado todos los filtros',
+                timer: 1500,
+                timerProgressBar: true,
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false
+            });
+        }
+        
+        /**
+         * Actualiza el contador de comidas mostradas
+         * @param {number} cantidad - Cantidad de comidas mostradas
+         */
+        function actualizarContadorComidas(cantidad) {
+            const contador = document.getElementById('comidas-contador');
+            if (!contador) return;
+            
+            if (cantidad === comidas.length) {
+                contador.textContent = `Mostrando todos los platos (${cantidad})`;
+            } else {
+                contador.textContent = `Mostrando ${cantidad} de ${comidas.length} platos`;
+            }
+        }
+        
+        /**
+         * Inicializa la página de comidas
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar sesión de usuario (de main.js)
+            if (typeof verificarSesion === 'function') {
+                verificarSesion();
+            }
+            
+            // Renderizar todas las comidas al inicio
+            renderizarComidas(comidas);
+            
+            // Actualizar contador de carrito
+            actualizarContadorCarrito();
+            
+            // Configurar eventos para filtros
+            const filtros = document.querySelectorAll('#categoria, #orden, #minimarket');
+            filtros.forEach(filtro => {
+                filtro.addEventListener('change', filtrarComidas);
+            });
+            
+            // Configurar búsqueda con debounce para mejor rendimiento
+            const inputBusqueda = document.getElementById('busqueda');
+            if (inputBusqueda) {
+                let timeoutId;
+                inputBusqueda.addEventListener('input', function() {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(filtrarComidas, 300);
+                });
+            }
+            
+            console.log('Página de comidas inicializada correctamente');
+        });
+    </script>
+</body>
+</html>

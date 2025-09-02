@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - Villa Markets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <style>
+        .text-green {
+            color: #2d8f3c;
+        }
+        .bg-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #1a5e24;
+            color: white;
+        }
+        .cart-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            padding: 20px;
+        }
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item img {
+            max-width: 64px;
+            max-height: 64px;
+            object-fit: contain;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-control button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+        .quantity-control button:hover {
+            background: #e0e0e0;
+        }
+        .quantity-control input {
+            width: 40px;
+            text-align: center;
+            margin: 0 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .cart-summary {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .cart-badge {
+            position: relative;
+            top: -8px;
+            right: -5px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="home.html">
+                <img src="img/logo.png" alt="Villa Markets" width="40" height="40" class="rounded">
+                Villa Markets
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nav" class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="minimarkets.html">Minimarkets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="comidas.html">Comidas</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link active position-relative" href="carrito.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count" class="badge rounded-pill bg-danger cart-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="registro.html">Registrarse</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container py-4">
+        <h1 class="text-green mb-4">Carrito de Compras</h1>
+        
+        <div class="row">
+            <!-- Productos en carrito -->
+            <div class="col-lg-8 mb-4">
+                <div class="cart-container" id="carrito-vacio">
+                    <!-- Mensaje para cuando el carrito está vacío -->
+                    <div class="text-center py-5 d-none" id="empty-cart-message">
+                        <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                        <h3 class="text-muted">Tu carrito está vacío</h3>
+                        <p>Agrega productos desde nuestro catálogo</p>
+                        <a href="productos.html" class="btn btn-green mt-3">Ver productos</a>
+                    </div>
+                    
+                    <!-- Lista de productos en el carrito -->
+                    <div id="cart-items-container">
+                        <!-- Se llena dinámicamente con JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumen del carrito -->
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h3>Resumen</h3>
+                    <div class="d-flex justify-content-between mt-3">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>IVA (19%):</span>
+                        <span id="iva">$0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>Envío:</span>
+                        <span id="envio">$0</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span id="total" class="text-green">$0</span>
+                    </div>
+                    
+                    <!-- Código de descuento -->
+                    <div class="mt-4">
+                        <label for="codigo-descuento" class="form-label">¿Tienes un código de descuento?</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="codigo-descuento" placeholder="Ingresa tu código">
+                            <button class="btn btn-outline-secondary" type="button" onclick="aplicarDescuento()">Aplicar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="mt-4">
+                        <a href="pedido.html" class="btn btn-green w-100 mb-2">
+                            <i class="fas fa-shopping-bag me-2"></i>Realizar pedido
+                        </a>
+                        <button class="btn btn-outline-secondary w-100" onclick="vaciarCarrito()">Vaciar carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Villa Markets</h5>
+                    <p>Tu plataforma para mini markets locales en todo Chile.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="minimarkets.html" class="text-white">Minimarkets</a></li>
+                        <li><a href="productos.html" class="text-white">Catálogo</a></li>
+                        <li><a href="soporte.html" class="text-white">Soporte</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contáctanos</h5>
+                    <p>contacto@villamarkets.cl</p>
+                    <p>+56 9 1234 5678</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center small mb-0">© 2025 Villa Markets. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Cargar carrito desde localStorage
+        let carrito = JSON.parse(localStorage.getItem('carritoVillaMarkets')) || [];
+        let costoEnvio = 2990; // Costo fijo de envío para este ejemplo
+        
+        // Renderizar carrito
+        function renderizarCarrito() {
+            const contenedor = document.getElementById('cart-items-container');
+            const mensajeVacio = document.getElementById('empty-cart-message');
+            const contadorCarrito = document.getElementById('cart-count');
+            
+            // Actualizar contador
+            contadorCarrito.textContent = carrito.reduce((total, item) => total + item.cantidad, 0);
+            
+            // Mostrar mensaje de carrito vacío si corresponde
+            if (carrito.length === 0) {
+                mensajeVacio.classList.remove('d-none');
+                contenedor.innerHTML = '';
+                actualizarResumen(0, 0, 0, 0);
+                return;
+            }
+            
+            mensajeVacio.classList.add('d-none');
+            contenedor.innerHTML = '';
+            
+            // Calcular totales
+            let subtotal = 0;
+            
+            carrito.forEach(item => {
+                const itemTotal = item.precio * item.cantidad;
+                subtotal += itemTotal;
+                
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <img src="${item.imagen}" alt="${item.nombre}" class="img-fluid">
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0">${item.nombre}</h5>
+                            <small class="text-muted">$${item.precio.toLocaleString('es-CL')} c/u</small>
+                        </div>
+                        <div class="col-3">
+                            <div class="quantity-control">
+                                <button onclick="cambiarCantidad(${item.id}, -1)">-</button>
+                                <input type="text" value="${item.cantidad}" readonly>
+                                <button onclick="cambiarCantidad(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="col-2 text-end">
+                            <span class="fw-bold">$${itemTotal.toLocaleString('es-CL')}</span>
+                        </div>
+                        <div class="col-1 text-end">
+                            <button class="btn btn-sm text-danger" onclick="eliminarItem(${item.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                contenedor.appendChild(div);
+            });
+            
+            // Calcular IVA y total
+            const iva = subtotal * 0.19;
+            const total = subtotal + iva + costoEnvio;
+            
+            // Actualizar resumen
+            actualizarResumen(subtotal, iva, costoEnvio, total);
+        }
+        
+        // Actualizar el resumen del carrito
+        function actualizarResumen(subtotal, iva, envio, total) {
+            document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CL')}`;
+            document.getElementById('iva').textContent = `$${iva.toLocaleString('es-CL')}`;
+            document.getElementById('envio').textContent = `$${envio.toLocaleString('es-CL')}`;
+            document.getElementById('total').textContent = `$${total.toLocaleString('es-CL')}`;
+        }
+        
+        // Cambiar cantidad de un producto
+        function cambiarCantidad(idProducto, cambio) {
+            const itemIndex = carrito.findIndex(item => item.id === idProducto);
+            if (itemIndex === -1) return;
+            
+            const nuevaCantidad = carrito[itemIndex].cantidad + cambio;
+            
+            if (nuevaCantidad < 1) {
+                eliminarItem(idProducto);
+                return;
+            }
+            
+            carrito[itemIndex].cantidad = nuevaCantidad;
+            guardarCarrito();
+            renderizarCarrito();
+        }
+        
+        // Eliminar un producto del carrito
+        function eliminarItem(idProducto) {
+            carrito = carrito.filter(item => item.id !== idProducto);
+            guardarCarrito();
+            renderizarCarrito();
+        }
+        
+        // Vaciar todo el carrito
+        function vaciarCarrito() {
+            if (!confirm('¿Estás seguro de que quieres vaciar el carrito?')) return;
+            
+            carrito = [];
+            guardarCarrito();
+            renderizarCarrito();
+        }
+        
+        // Guardar carrito en localStorage
+        function guardarCarrito() {
+            localStorage.setItem('carritoVillaMarkets', JSON.stringify(carrito));
+        }
+        
+        // Aplicar código de descuento
+        function aplicarDescuento() {
+            const codigo = document.getElementById('codigo-descuento').value.trim().toUpperCase();
+            
+            if (codigo === 'VILLA10') {
+                alert('¡Descuento del 10% aplicado!');
+                // Recalcular totales con descuento
+                const subtotal = carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
+                const subtotalConDescuento = subtotal * 0.9;
+                const iva = subtotalConDescuento * 0.19;
+                const total = subtotalConDescuento + iva + costoEnvio;
+                
+                actualizarResumen(subtotalConDescuento, iva, costoEnvio, total);
+            } else if (codigo === 'ENVIOGRATIS') {
+                alert('¡Envío gratis aplicado!');
+                // Recalcular totales sin costo de envío
+                const subtotal = carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
+                const iva = subtotal * 0.19;
+                const total = subtotal + iva;
+                
+                actualizarResumen(subtotal, iva, 0, total);
+                costoEnvio = 0;
+            } else {
+                alert('Código de descuento inválido');
+            }
+        }
+        
+        // Proceder al pago
+        function procederPago() {
+            if (carrito.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+            
+            // Redirigir a la página de pedido
+            window.location.href = 'https://webpay3g.transbank.cl/';
+        }
+        
+        // Inicializar
+        window.onload = function() {
+            renderizarCarrito();
+        };
+    </script>
+</body>
+</html>

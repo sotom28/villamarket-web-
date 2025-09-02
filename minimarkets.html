@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimarkets Cercanos - Villa Markets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Leaflet CSS para mapas -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Favicon -->
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <style>
+        .text-green {
+            color: #2d8f3c;
+        }
+        .bg-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #1a5e24;
+            color: white;
+        }
+        .map-container {
+            height: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #mapa {
+            height: 100%;
+            width: 100%;
+        }
+        .market-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .market-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .market-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .market-item.active {
+            border: 2px solid #2d8f3c;
+            background-color: #f0f9f1;
+        }
+        .cart-badge {
+            position: relative;
+            top: -8px;
+            right: -5px;
+        }
+        .search-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .market-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .market-card img {
+            height: 160px;
+            object-fit: cover;
+        }
+        .market-details {
+            margin-top: 20px;
+        }
+        .badge-open {
+            background-color: #2d8f3c;
+            color: white;
+            font-weight: normal;
+            padding: 5px 10px;
+        }
+        .badge-closed {
+            background-color: #dc3545;
+            color: white;
+            font-weight: normal;
+            padding: 5px 10px;
+        }
+        .product-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            gap: 15px;
+        }
+        .product-card {
+            min-width: 150px;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: white;
+            text-align: center;
+        }
+        .product-card img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="home.html">
+                <img src="img/logo.png" alt="Villa Markets" width="40" height="40" class="rounded">
+                Villa Markets
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nav" class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="minimarkets.html">Minimarkets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="productos.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="comidas.html">Comidas</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="carrito.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count" class="badge rounded-pill bg-danger cart-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="registro.html">Registrarse</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container py-4">
+        <h1 class="text-green mb-4">Encuentra tu Mini Market más cercano</h1>
+
+        <!-- Buscador -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <label for="region" class="form-label">Región</label>
+                    <select class="form-select" id="region" onchange="filtrarMinimarkets()">
+                        <option value="todas" selected>Todas las regiones</option>
+                        <option value="metropolitana">Metropolitana</option>
+                        <option value="valparaiso">Valparaíso</option>
+                        <option value="biobio">Biobío</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="comuna" class="form-label">Comuna</label>
+                    <select class="form-select" id="comuna" onchange="filtrarMinimarkets()">
+                        <option value="todas" selected>Todas las comunas</option>
+                        <!-- Se llena dinámicamente -->
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <button class="btn btn-green w-100" onclick="encontrarCercano()">
+                        <i class="fas fa-location-arrow me-1"></i> Encontrar cercano
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Lista de minimarkets -->
+            <div class="col-md-4 mb-4">
+                <h3 class="mb-3">Mini Markets Disponibles</h3>
+                <div class="market-list" id="lista-minimarkets">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+            
+            <!-- Mapa -->
+            <div class="col-md-8 mb-4">
+                <div class="map-container">
+                    <div id="mapa"></div>
+                </div>
+                
+                <!-- Detalle del minimarket seleccionado -->
+                <div class="market-details" id="detalles-minimarket">
+                    <!-- Se llena dinámicamente cuando se selecciona un minimarket -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Villa Markets</h5>
+                    <p>Tu plataforma para mini markets locales en todo Chile.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="minimarkets.html" class="text-white">Minimarkets</a></li>
+                        <li><a href="productos.html" class="text-white">Catálogo</a></li>
+                        <li><a href="soporte.html" class="text-white">Soporte</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contáctanos</h5>
+                    <p>contacto@villamarkets.cl</p>
+                    <p>+56 9 1234 5678</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center small mb-0">© 2025 Villa Markets. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS para mapas -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Datos de ejemplo de minimarkets
+        const minimarkets = [
+            {
+                id: 1,
+                nombre: "Villa Market Centro",
+                direccion: "Av. Libertador Bernardo O'Higgins 1234, Santiago",
+                region: "metropolitana",
+                comuna: "santiago",
+                coordenadas: [-33.4489, -70.6693],
+                horario: "08:00 - 22:00",
+                abierto: true,
+                telefono: "+56 2 2123 4567",
+                imagen: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                productos: [
+                    { id: 1, nombre: "Arroz", precio: 1290, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046857.png" },
+                    { id: 2, nombre: "Leche", precio: 990, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046876.png" },
+                    { id: 3, nombre: "Pan", precio: 1590, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046869.png" }
+                ]
+            },
+            {
+                id: 2,
+                nombre: "Villa Market Providencia",
+                direccion: "Av. Providencia 1760, Providencia",
+                region: "metropolitana",
+                comuna: "providencia",
+                coordenadas: [-33.4288, -70.6264],
+                horario: "07:30 - 23:00",
+                abierto: true,
+                telefono: "+56 2 2234 5678",
+                imagen: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                productos: [
+                    { id: 1, nombre: "Arroz", precio: 1390, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046857.png" },
+                    { id: 2, nombre: "Leche", precio: 1090, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046876.png" },
+                    { id: 4, nombre: "Huevos", precio: 2990, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046863.png" }
+                ]
+            },
+            {
+                id: 3,
+                nombre: "Villa Market Las Condes",
+                direccion: "Av. Apoquindo 3990, Las Condes",
+                region: "metropolitana",
+                comuna: "las_condes",
+                coordenadas: [-33.4146, -70.5838],
+                horario: "08:00 - 21:00",
+                abierto: true,
+                telefono: "+56 2 2345 6789",
+                imagen: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                productos: [
+                    { id: 5, nombre: "Aceite", precio: 5990, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046872.png" },
+                    { id: 6, nombre: "Manzanas", precio: 1990, imagen: "https://cdn-icons-png.flaticon.com/512/415/415682.png" },
+                    { id: 9, nombre: "Café", precio: 4590, imagen: "https://cdn-icons-png.flaticon.com/512/751/751621.png" }
+                ]
+            },
+            {
+                id: 4,
+                nombre: "Villa Market El Bosque",
+                direccion: "Gran Avenida 5462, El Bosque",
+                region: "metropolitana",
+                comuna: "el_bosque",
+                coordenadas: [-33.5667, -70.6747],
+                horario: "08:30 - 20:00",
+                abierto: false,
+                telefono: "+56 2 2456 7890",
+                imagen: "https://images.unsplash.com/photo-1601600576337-c1d8a0d0c2c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                productos: [
+                    { id: 3, nombre: "Pan", precio: 1490, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046869.png" },
+                    { id: 7, nombre: "Detergente", precio: 3490, imagen: "https://cdn-icons-png.flaticon.com/512/1614/1614565.png" },
+                    { id: 11, nombre: "Agua", precio: 890, imagen: "https://cdn-icons-png.flaticon.com/512/3248/3248369.png" }
+                ]
+            },
+            {
+                id: 5,
+                nombre: "Villa Market Viña del Mar",
+                direccion: "Av. San Martín 432, Viña del Mar",
+                region: "valparaiso",
+                comuna: "viña_del_mar",
+                coordenadas: [-33.0246, -71.5518],
+                horario: "09:00 - 22:00",
+                abierto: true,
+                telefono: "+56 32 234 5678",
+                imagen: "https://images.unsplash.com/photo-1568254183919-78a4f43a2877?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                productos: [
+                    { id: 2, nombre: "Leche", precio: 990, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046876.png" },
+                    { id: 10, nombre: "Avena", precio: 1790, imagen: "https://cdn-icons-png.flaticon.com/512/2553/2553691.png" },
+                    { id: 12, nombre: "Yogurt", precio: 1290, imagen: "https://cdn-icons-png.flaticon.com/512/3050/3050165.png" }
+                ]
+            },
+            {
+                id: 6,
+                nombre: "Villa Market Concepción",
+                direccion: "O'Higgins 567, Concepción",
+                region: "biobio",
+                comuna: "concepcion",
+                coordenadas: [-36.8261, -73.0498],
+                horario: "08:00 - 21:00",
+                abierto: true,
+                telefono: "+56 41 234 5678",
+                imagen: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                productos: [
+                    { id: 1, nombre: "Arroz", precio: 1290, imagen: "https://cdn-icons-png.flaticon.com/512/1046/1046857.png" },
+                    { id: 6, nombre: "Manzanas", precio: 1790, imagen: "https://cdn-icons-png.flaticon.com/512/415/415682.png" },
+                    { id: 8, nombre: "Jugo", precio: 1990, imagen: "https://cdn-icons-png.flaticon.com/512/3076/3076069.png" }
+                ]
+            }
+        ];
+        
+        // Comunas por región
+        const comunasPorRegion = {
+            metropolitana: ["santiago", "providencia", "las_condes", "el_bosque"],
+            valparaiso: ["viña_del_mar", "valparaiso", "quilpue"],
+            biobio: ["concepcion", "talcahuano", "chiguayante"]
+        };
+        
+        // Nombres bonitos de comunas
+        const nombresComuna = {
+            santiago: "Santiago Centro",
+            providencia: "Providencia",
+            las_condes: "Las Condes",
+            el_bosque: "El Bosque",
+            viña_del_mar: "Viña del Mar",
+            valparaiso: "Valparaíso",
+            quilpue: "Quilpué",
+            concepcion: "Concepción",
+            talcahuano: "Talcahuano",
+            chiguayante: "Chiguayante"
+        };
+        
+        // Variables globales para el mapa
+        let mapa;
+        let marcadores = [];
+        let minimarketSeleccionado = null;
+        let ubicacionUsuario = null;
+        
+        // Inicializar mapa
+        function inicializarMapa() {
+            // Crear mapa centrado en Chile
+            mapa = L.map('mapa').setView([-33.45, -70.65], 11);
+            
+            // Añadir capa de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mapa);
+            
+            // Mostrar todos los minimarkets al inicio
+            mostrarMinimarketsEnMapa(minimarkets);
+            
+            // Llenar lista de minimarkets
+            mostrarListaMinimarkets(minimarkets);
+            
+            // Actualizar selector de comunas
+            actualizarSelectorComunas("todas");
+        }
+        
+        // Mostrar minimarkets en el mapa
+        function mostrarMinimarketsEnMapa(markets) {
+            // Limpiar marcadores anteriores
+            marcadores.forEach(marcador => mapa.removeLayer(marcador));
+            marcadores = [];
+            
+            // Añadir nuevos marcadores
+            markets.forEach(market => {
+                const marcador = L.marker(market.coordenadas)
+                    .addTo(mapa)
+                    .bindPopup(`<b>${market.nombre}</b><br>${market.direccion}`);
+                    
+                marcador.on('click', function() {
+                    seleccionarMinimarket(market.id);
+                });
+                
+                marcadores.push(marcador);
+            });
+            
+            // Ajustar la vista si hay marcadores
+            if (marcadores.length > 0) {
+                const grupo = new L.featureGroup(marcadores);
+                mapa.fitBounds(grupo.getBounds().pad(0.1));
+            }
+        }
+        
+        // Mostrar lista de minimarkets
+        function mostrarListaMinimarkets(markets) {
+            const contenedor = document.getElementById('lista-minimarkets');
+            contenedor.innerHTML = '';
+            
+            if (markets.length === 0) {
+                contenedor.innerHTML = '<div class="alert alert-info">No se encontraron minimarkets con los filtros seleccionados.</div>';
+                return;
+            }
+            
+            markets.forEach(market => {
+                const div = document.createElement('div');
+                div.className = `card market-item ${market.id === minimarketSeleccionado?.id ? 'active' : ''}`;
+                div.onclick = function() { seleccionarMinimarket(market.id); };
+                
+                div.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${market.nombre}</h5>
+                        <p class="card-text small mb-1"><i class="fas fa-map-marker-alt me-1 text-green"></i> ${market.direccion}</p>
+                        <p class="card-text small mb-0">
+                            <i class="fas fa-clock me-1 text-green"></i> ${market.horario}
+                            <span class="badge ms-2 ${market.abierto ? 'badge-open' : 'badge-closed'}">
+                                ${market.abierto ? 'Abierto' : 'Cerrado'}
+                            </span>
+                        </p>
+                    </div>
+                `;
+                
+                contenedor.appendChild(div);
+            });
+        }
+        
+        // Seleccionar un minimarket
+        function seleccionarMinimarket(id) {
+            const market = minimarkets.find(m => m.id === id);
+            if (!market) return;
+            
+            // Actualizar variable global
+            minimarketSeleccionado = market;
+            
+            // Actualizar estilo en la lista
+            document.querySelectorAll('.market-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.querySelector('.card-title').textContent === market.nombre) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Centrar mapa en el minimarket seleccionado
+            mapa.setView(market.coordenadas, 15);
+            
+            // Abrir popup del marcador
+            marcadores.forEach(marcador => {
+                const contenido = marcador.getPopup().getContent();
+                if (contenido.includes(market.nombre)) {
+                    marcador.openPopup();
+                }
+            });
+            
+            // Mostrar detalles del minimarket
+            mostrarDetallesMinimarket(market);
+        }
+        
+        // Mostrar detalles del minimarket seleccionado
+        function mostrarDetallesMinimarket(market) {
+            const contenedor = document.getElementById('detalles-minimarket');
+            
+            contenedor.innerHTML = `
+                <div class="card market-card">
+                    <img src="${market.imagen}" class="card-img-top" alt="${market.nombre}">
+                    <div class="card-body">
+                        <h3 class="card-title">${market.nombre}</h3>
+                        <p class="card-text"><i class="fas fa-map-marker-alt me-1 text-green"></i> ${market.direccion}</p>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p class="mb-1"><i class="fas fa-clock me-1 text-green"></i> ${market.horario}</p>
+                                <p><i class="fas fa-phone me-1 text-green"></i> ${market.telefono}</p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <span class="badge ${market.abierto ? 'badge-open' : 'badge-closed'} mb-2">
+                                    ${market.abierto ? 'Abierto ahora' : 'Cerrado ahora'}
+                                </span>
+                                <br>
+                                <a href="#" class="btn btn-sm btn-outline-secondary" onclick="compartirUbicacion('${market.nombre}')">
+                                    <i class="fas fa-share-alt me-1"></i> Compartir
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <h4 class="h5 mt-4 mb-3">Productos destacados</h4>
+                        <div class="product-scroll">
+                            ${market.productos.map(prod => `
+                                <div class="product-card">
+                                    <img src="${prod.imagen}" alt="${prod.nombre}">
+                                    <p class="mb-1">${prod.nombre}</p>
+                                    <p class="fw-bold text-green mb-0">$${prod.precio.toLocaleString('es-CL')}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-3">
+                            <a href="productos.html?market=${market.id}" class="btn btn-green">
+                                <i class="fas fa-shopping-basket me-1"></i> Ver todos los productos
+                            </a>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${market.coordenadas[0]},${market.coordenadas[1]}" 
+                               target="_blank" class="btn btn-outline-secondary">
+                                <i class="fas fa-directions me-1"></i> Cómo llegar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Actualizar selector de comunas según la región
+        function actualizarSelectorComunas(region) {
+            const selectorComuna = document.getElementById('comuna');
+            selectorComuna.innerHTML = '<option value="todas" selected>Todas las comunas</option>';
+            
+            if (region !== "todas") {
+                const comunas = comunasPorRegion[region] || [];
+                comunas.forEach(comuna => {
+                    const option = document.createElement('option');
+                    option.value = comuna;
+                    option.textContent = nombresComuna[comuna] || comuna;
+                    selectorComuna.appendChild(option);
+                });
+            }
+        }
+        
+        // Filtrar minimarkets según selección
+        function filtrarMinimarkets() {
+            const region = document.getElementById('region').value;
+            const comuna = document.getElementById('comuna').value;
+            
+            // Si cambia la región, actualizar selector de comunas
+            if (event && event.target.id === 'region') {
+                actualizarSelectorComunas(region);
+            }
+            
+            // Filtrar minimarkets
+            let marketsFiltrados = [...minimarkets];
+            
+            if (region !== "todas") {
+                marketsFiltrados = marketsFiltrados.filter(m => m.region === region);
+            }
+            
+            if (comuna !== "todas") {
+                marketsFiltrados = marketsFiltrados.filter(m => m.comuna === comuna);
+            }
+            
+            // Actualizar mapa y lista
+            mostrarMinimarketsEnMapa(marketsFiltrados);
+            mostrarListaMinimarkets(marketsFiltrados);
+            
+            // Limpiar detalles si el minimarket seleccionado ya no está en la lista
+            if (minimarketSeleccionado && !marketsFiltrados.some(m => m.id === minimarketSeleccionado.id)) {
+                document.getElementById('detalles-minimarket').innerHTML = '';
+                minimarketSeleccionado = null;
+            }
+        }
+        
+        // Encontrar el minimarket más cercano
+        function encontrarCercano() {
+            // Solicitar permisos de ubicación
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        ubicacionUsuario = [position.coords.latitude, position.coords.longitude];
+                        
+                        // Añadir marcador de la ubicación del usuario
+                        const iconoUsuario = L.divIcon({
+                            html: '<div style="background-color: #1e88e5; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+                            className: 'ubicacion-usuario',
+                            iconSize: [16, 16],
+                            iconAnchor: [8, 8]
+                        });
+                        
+                        L.marker(ubicacionUsuario, { icon: iconoUsuario })
+                            .addTo(mapa)
+                            .bindPopup("Tu ubicación");
+                        
+                        // Calcular distancias a cada minimarket
+                        const marketsCercanos = minimarkets.map(market => {
+                            const distancia = calcularDistancia(
+                                ubicacionUsuario[0], ubicacionUsuario[1], 
+                                market.coordenadas[0], market.coordenadas[1]
+                            );
+                            return { ...market, distancia };
+                        }).sort((a, b) => a.distancia - b.distancia);
+                        
+                        // Seleccionar el más cercano
+                        if (marketsCercanos.length > 0) {
+                            seleccionarMinimarket(marketsCercanos[0].id);
+                            
+                            // Ajustar vista para mostrar usuario y minimarket
+                            const puntos = [ubicacionUsuario, marketsCercanos[0].coordenadas];
+                            const bounds = L.latLngBounds(puntos);
+                            mapa.fitBounds(bounds.pad(0.3));
+                            
+                            alert(`El minimarket más cercano es ${marketsCercanos[0].nombre} a ${marketsCercanos[0].distancia.toFixed(1)} km`);
+                        }
+                    },
+                    function(error) {
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                alert("Debes permitir el acceso a tu ubicación para encontrar el minimarket más cercano.");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                alert("No se pudo determinar tu ubicación actual.");
+                                break;
+                            case error.TIMEOUT:
+                                alert("La solicitud de ubicación ha caducado.");
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                alert("Se produjo un error desconocido al obtener tu ubicación.");
+                                break;
+                        }
+                    }
+                );
+            } else {
+                alert("Tu navegador no admite la geolocalización.");
+            }
+        }
+        
+        // Calcular distancia entre dos puntos (fórmula de Haversine)
+        function calcularDistancia(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radio de la tierra en km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+        
+        // Compartir ubicación
+        function compartirUbicacion(nombreMinimarket) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Villa Markets',
+                    text: `¡Visita ${nombreMinimarket} en Villa Markets!`,
+                    url: window.location.href,
+                }).then(() => {
+                    console.log('Ubicación compartida exitosamente');
+                }).catch((error) => {
+                    console.log('Error al compartir', error);
+                });
+            } else {
+                alert('Tu navegador no admite la función de compartir.');
+            }
+        }
+        
+        // Cargar contador del carrito
+        function cargarContadorCarrito() {
+            const carrito = JSON.parse(localStorage.getItem('carritoVillaMarkets')) || [];
+            document.getElementById('cart-count').textContent = carrito.reduce((total, item) => total + item.cantidad, 0);
+        }
+        
+        // Inicializar al cargar la página
+        window.onload = function() {
+            inicializarMapa();
+            cargarContadorCarrito();
+        };
+    </script>
+</body>
+</html>

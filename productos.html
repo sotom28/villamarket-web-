@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Villa Markets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <style>
+        .text-green {
+            color: #2d8f3c;
+        }
+        .bg-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #1a5e24;
+            color: white;
+        }
+        .product-card {
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .product-card img {
+            height: 180px;
+            object-fit: contain;
+            padding: 1rem;
+        }
+        .filter-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .badge-stock {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .cart-badge {
+            position: relative;
+            top: -8px;
+            right: -5px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="home.html">
+                <img src="img/logo.png" alt="Villa Markets" width="40" height="40" class="rounded">
+                Villa Markets
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nav" class="collapse navbar-collapse">
+                <!-- El menú se cargará dinámicamente según el estado de la sesión desde main.js -->
+                <ul id="menu-opciones" class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="minimarkets.html">Minimarkets</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="productos.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="comidas.html">Comidas</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="carrito.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count" class="badge rounded-pill bg-danger cart-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="registro.html">Registrarse</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container py-4">
+        <h1 class="text-green mb-4">Catálogo de Productos</h1>
+        
+        <!-- Filtros -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="categoria" class="form-label">
+                        <i class="fas fa-tags me-1 text-green"></i> Categoría
+                    </label>
+                    <select class="form-select" id="categoria">
+                        <option value="todos" selected>Todas las categorías</option>
+                        <option value="abarrotes">Abarrotes</option>
+                        <option value="lacteos">Lácteos</option>
+                        <option value="frutas">Frutas y Verduras</option>
+                        <option value="limpieza">Limpieza</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="panaderia">Panadería</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="orden" class="form-label">
+                        <i class="fas fa-sort me-1 text-green"></i> Ordenar por
+                    </label>
+                    <select class="form-select" id="orden">
+                        <option value="nombre" selected>Nombre A-Z</option>
+                        <option value="precio-asc">Precio: Menor a mayor</option>
+                        <option value="precio-desc">Precio: Mayor a menor</option>
+                        <option value="stock-desc">Mayor disponibilidad</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="stock" class="form-label">
+                        <i class="fas fa-box-open me-1 text-green"></i> Disponibilidad
+                    </label>
+                    <select class="form-select" id="stock">
+                        <option value="todos" selected>Todos los productos</option>
+                        <option value="disponible">Solo disponibles</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="busqueda" class="form-label">
+                        <i class="fas fa-search me-1 text-green"></i> Buscar
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="busqueda" placeholder="Buscar productos..." autocomplete="off">
+                        <button class="btn btn-green" type="button" onclick="filtrarProductos()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="limpiarFiltros()">
+                                <i class="fas fa-undo me-1"></i> Limpiar filtros
+                            </button>
+                        </div>
+                        <div id="productos-contador" class="text-muted small">
+                            Mostrando todos los productos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Productos -->
+        <div class="row" id="productos-container">
+            <!-- Los productos se cargan dinámicamente con JavaScript -->
+        </div>
+        
+        <!-- Paginación -->
+        <nav class="my-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Siguiente</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Villa Markets</h5>
+                    <p>Tu plataforma para mini markets locales en todo Chile.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="minimarkets.html" class="text-white">Minimarkets</a></li>
+                        <li><a href="productos.html" class="text-white">Catálogo</a></li>
+                        <li><a href="soporte.html" class="text-white">Soporte</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contáctanos</h5>
+                    <p>contacto@villamarkets.cl</p>
+                    <p>+56 9 1234 5678</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center small mb-0">© 2025 Villa Markets. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- SweetAlert2 para alertas mejoradas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script principal del sitio -->
+    <script src="main.js"></script>
+
+    <script>
+        // Productos de ejemplo (usa una versión extendida de los productos en main.js)
+        const productosExtendidos = [
+            {
+                id: 1,
+                nombre: 'Arroz Integral',
+                precio: 1290,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                descripcion: 'Arroz integral 1kg, marca Villa Markets',
+                categoria: 'abarrotes',
+                stock: 15,
+                minimarket: 'Villa Central'
+            },
+            {
+                id: 2,
+                nombre: 'Leche Descremada',
+                precio: 990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1046/1046876.png',
+                descripcion: 'Leche descremada 1L, marca Villa Markets',
+                categoria: 'lacteos',
+                stock: 25,
+                minimarket: 'Villa Norte'
+            },
+            {
+                id: 3,
+                nombre: 'Pan Integral',
+                precio: 1590,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1046/1046869.png',
+                descripcion: 'Pan integral 500g, marca Villa Markets',
+                categoria: 'abarrotes',
+                stock: 8,
+                minimarket: 'Villa Central'
+            },
+            {
+                id: 4,
+                nombre: 'Huevos Orgánicos',
+                precio: 2990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1046/1046863.png',
+                descripcion: 'Huevos orgánicos x6, marca Villa Markets',
+                categoria: 'lacteos',
+                stock: 12,
+                minimarket: 'Villa Este'
+            },
+            {
+                id: 5,
+                nombre: 'Aceite de Oliva',
+                precio: 5990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1046/1046872.png',
+                descripcion: 'Aceite de oliva extra virgen 500ml, marca Villa Markets',
+                categoria: 'abarrotes',
+                stock: 5,
+                minimarket: 'Villa Sur'
+            },
+            {
+                id: 6,
+                nombre: 'Manzanas',
+                precio: 1990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/415/415682.png',
+                descripcion: 'Manzanas rojas 1kg, producción local',
+                categoria: 'frutas',
+                stock: 30,
+                minimarket: 'Villa Norte'
+            },
+            {
+                id: 7,
+                nombre: 'Detergente',
+                precio: 3490,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/1614/1614565.png',
+                descripcion: 'Detergente líquido 1L, marca Villa Clean',
+                categoria: 'limpieza',
+                stock: 18,
+                minimarket: 'Villa Este'
+            },
+            {
+                id: 8,
+                nombre: 'Jugo Natural',
+                precio: 1990,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/3076/3076069.png',
+                descripcion: 'Jugo natural de naranja 1L, sin azúcar añadida',
+                categoria: 'bebidas',
+                stock: 0,
+                minimarket: 'Villa Sur'
+            },
+            {
+                id: 9,
+                nombre: 'Café Orgánico',
+                precio: 4590,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/751/751621.png',
+                descripcion: 'Café orgánico tostado 250g, comercio justo',
+                categoria: 'abarrotes',
+                stock: 7,
+                minimarket: 'Villa Norte'
+            },
+            {
+                id: 10,
+                nombre: 'Avena',
+                precio: 1790,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/2553/2553691.png',
+                descripcion: 'Avena tradicional 500g, rica en fibra',
+                categoria: 'abarrotes',
+                stock: 20,
+                minimarket: 'Villa Central'
+            },
+            {
+                id: 11,
+                nombre: 'Agua Mineral',
+                precio: 890,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/3248/3248369.png',
+                descripcion: 'Agua mineral sin gas 1.5L',
+                categoria: 'bebidas',
+                stock: 48,
+                minimarket: 'Villa Este'
+            },
+            {
+                id: 12,
+                nombre: 'Yogurt Griego',
+                precio: 1290,
+                imagen: 'https://cdn-icons-png.flaticon.com/512/3050/3050165.png',
+                descripcion: 'Yogurt griego natural 200g, alto en proteínas',
+                categoria: 'lacteos',
+                stock: 15,
+                minimarket: 'Villa Central'
+            }
+        ];
+
+        // Carrito de compras - verificar ambas claves para compatibilidad
+        let carrito = JSON.parse(localStorage.getItem('carritoVillaMarkets')) || 
+                      JSON.parse(localStorage.getItem('carrito')) || [];
+        
+        /**
+         * Actualizar contador del carrito
+         * Utiliza el ID apropiado según donde estemos
+         */
+        function actualizarContadorCarrito() {
+            const contador = document.getElementById('cart-count');
+            if (!contador) return;
+            
+            contador.textContent = carrito.reduce((total, item) => total + item.cantidad, 0);
+        }
+        
+        /**
+         * Renderiza los productos en el contenedor
+         * @param {Array} productosAMostrar - Lista de productos a mostrar
+         */
+        function renderizarProductos(productosAMostrar) {
+            const contenedor = document.getElementById('productos-container');
+            if (!contenedor) return;
+            
+            contenedor.innerHTML = '';
+            
+            if (productosAMostrar.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No se encontraron productos que coincidan con los criterios de búsqueda.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            productosAMostrar.forEach(producto => {
+                const disponible = producto.stock > 0;
+                const col = document.createElement('div');
+                col.className = 'col-md-4 col-lg-3 mb-4';
+                
+                col.innerHTML = `
+                    <div class="card product-card">
+                        ${!disponible ? '<span class="badge bg-danger badge-stock">Agotado</span>' : ''}
+                        ${producto.stock <= 5 && producto.stock > 0 ? '<span class="badge bg-warning text-dark badge-stock">Últimas unidades</span>' : ''}
+                        <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
+                        <div class="card-body">
+                            <h5 class="card-title">${producto.nombre}</h5>
+                            <p class="card-text text-muted small">${producto.descripcion}</p>
+                            <p class="card-text text-muted small mb-3">
+                                <i class="fas fa-store-alt me-1"></i> ${producto.minimarket || 'Todos los minimarkets'}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-green">$${producto.precio.toLocaleString('es-CL')}</span>
+                                <button onclick="agregarAlCarrito(${producto.id})" class="btn btn-green btn-sm" ${!disponible ? 'disabled' : ''}>
+                                    <i class="fas fa-cart-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                contenedor.appendChild(col);
+            });
+        }
+        
+        /**
+         * Filtra los productos según los criterios seleccionados
+         */
+        function filtrarProductos() {
+            const categoria = document.getElementById('categoria').value;
+            const orden = document.getElementById('orden').value;
+            const stock = document.getElementById('stock').value;
+            const busqueda = document.getElementById('busqueda').value.toLowerCase().trim();
+            
+            let productosFiltrados = [...productosExtendidos];
+            
+            // Filtrar por categoría
+            if (categoria !== 'todos') {
+                productosFiltrados = productosFiltrados.filter(p => p.categoria === categoria);
+            }
+            
+            // Filtrar por stock
+            if (stock === 'disponible') {
+                productosFiltrados = productosFiltrados.filter(p => p.stock > 0);
+            }
+            
+            // Filtrar por búsqueda
+            if (busqueda) {
+                productosFiltrados = productosFiltrados.filter(p => 
+                    p.nombre.toLowerCase().includes(busqueda) || 
+                    p.descripcion.toLowerCase().includes(busqueda) ||
+                    p.categoria.toLowerCase().includes(busqueda) ||
+                    (p.minimarket && p.minimarket.toLowerCase().includes(busqueda))
+                );
+            }
+            
+            // Ordenar
+            switch(orden) {
+                case 'nombre':
+                    productosFiltrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    break;
+                case 'precio-asc':
+                    productosFiltrados.sort((a, b) => a.precio - b.precio);
+                    break;
+                case 'precio-desc':
+                    productosFiltrados.sort((a, b) => b.precio - a.precio);
+                    break;
+                case 'stock-desc':
+                    productosFiltrados.sort((a, b) => b.stock - a.stock);
+                    break;
+            }
+            
+            renderizarProductos(productosFiltrados);
+            actualizarContadorProductos(productosFiltrados.length);
+        }
+        
+        /**
+         * Agrega un producto al carrito de compras
+         * @param {number} idProducto - ID del producto a agregar
+         */
+        function agregarAlCarrito(idProducto) {
+            const producto = productosExtendidos.find(p => p.id === idProducto);
+            if (!producto || producto.stock <= 0) return;
+            
+            // Buscar si ya está en el carrito
+            const itemIndex = carrito.findIndex(item => item.id === idProducto);
+            
+            if (itemIndex >= 0) {
+                // Ya existe en el carrito, aumentar cantidad
+                if (carrito[itemIndex].cantidad < producto.stock) {
+                    carrito[itemIndex].cantidad++;
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stock limitado',
+                        text: 'No hay más unidades disponibles de este producto',
+                        confirmButtonColor: '#2d8f3c'
+                    });
+                    return;
+                }
+            } else {
+                // Nuevo item
+                carrito.push({
+                    id: producto.id,
+                    nombre: producto.nombre,
+                    precio: producto.precio,
+                    imagen: producto.imagen,
+                    cantidad: 1,
+                    minimarket: producto.minimarket || 'Villa Central'
+                });
+            }
+            
+            // Guardar en localStorage con ambas claves para compatibilidad
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            localStorage.setItem('carritoVillaMarkets', JSON.stringify(carrito));
+            
+            // Actualizar contador
+            actualizarContadorCarrito();
+            
+            // Verificar si quedan pocas unidades
+            const stockRestante = producto.stock - (itemIndex >= 0 ? carrito[itemIndex].cantidad : 1);
+            
+            // Mostrar mensaje con SweetAlert2
+            Swal.fire({
+                icon: 'success',
+                title: '¡Producto agregado!',
+                text: `${producto.nombre} se ha añadido a tu carrito`,
+                timer: 1500,
+                timerProgressBar: true,
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+            
+            // Si quedan pocas unidades, mostrar aviso
+            if (stockRestante <= 5 && stockRestante > 0) {
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Stock limitado',
+                        text: `¡Quedan solo ${stockRestante} unidades de ${producto.nombre}!`,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false
+                    });
+                }, 1600);
+            }
+        }
+        
+        /**
+         * Inicializa la página de productos
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar sesión de usuario (de main.js)
+            if (typeof verificarSesion === 'function') {
+                verificarSesion();
+            }
+            
+            // Renderizar todos los productos al inicio
+            renderizarProductos(productosExtendidos);
+            
+            // Actualizar contador de carrito
+            actualizarContadorCarrito();
+            
+            // Configurar eventos para filtros
+            const filtros = document.querySelectorAll('#categoria, #orden, #stock');
+            filtros.forEach(filtro => {
+                filtro.addEventListener('change', filtrarProductos);
+            });
+            
+            // Configurar búsqueda con debounce para mejor rendimiento
+            const inputBusqueda = document.getElementById('busqueda');
+            if (inputBusqueda) {
+                let timeoutId;
+                inputBusqueda.addEventListener('input', function() {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(filtrarProductos, 300);
+                });
+            }
+            
+            // Actualizar contador de productos mostrados
+            actualizarContadorProductos(productosExtendidos.length);
+            
+            console.log('Página de productos inicializada correctamente');
+        });
+        
+        /**
+         * Limpia todos los filtros y muestra todos los productos
+         */
+        function limpiarFiltros() {
+            // Resetear selectores
+            document.getElementById('categoria').value = 'todos';
+            document.getElementById('orden').value = 'nombre';
+            document.getElementById('stock').value = 'todos';
+            document.getElementById('busqueda').value = '';
+            
+            // Volver a mostrar todos los productos
+            renderizarProductos(productosExtendidos);
+            
+            // Actualizar contador
+            actualizarContadorProductos(productosExtendidos.length);
+            
+            // Notificar al usuario
+            Swal.fire({
+                icon: 'info',
+                title: 'Filtros reseteados',
+                text: 'Se han eliminado todos los filtros',
+                timer: 1500,
+                timerProgressBar: true,
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false
+            });
+        }
+        
+        /**
+         * Actualiza el contador de productos mostrados
+         * @param {number} cantidad - Cantidad de productos mostrados
+         */
+        function actualizarContadorProductos(cantidad) {
+            const contador = document.getElementById('productos-contador');
+            if (!contador) return;
+            
+            if (cantidad === productosExtendidos.length) {
+                contador.textContent = `Mostrando todos los productos (${cantidad})`;
+            } else {
+                contador.textContent = `Mostrando ${cantidad} de ${productosExtendidos.length} productos`;
+            }
+        }
+    </script>
+</body>
+</html>

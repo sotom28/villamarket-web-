@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Villa Markets - Inicie sesión como cliente o dueño de minimarket">
+    <title>Villa Markets - Inicio de Sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <style>
+        .text-green {
+            color: #2d8f3c;
+        }
+        .bg-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green {
+            background-color: #2d8f3c;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #1a5e24;
+            color: white;
+        }
+        .login-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .login-icon {
+            font-size: 3rem;
+            color: #2d8f3c;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="home.html">
+            <img src="img/logo.png" alt="Villa Markets" width="40" height="40" class="rounded">
+            Villa Markets
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="nav" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="home.html">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link" href="minimarkets.html">Minimarkets</a></li>
+            <li class="nav-item"><a class="nav-link" href="productos.html">Catálogo</a></li>
+            <li class="nav-item"><a class="nav-link" href="carrito.html">Carrito</a></li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Acceso
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item active" href="login.html"><i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión</a></li>
+                    <li><a class="dropdown-item" href="registro.html"><i class="fas fa-user-plus me-2"></i>Registrarse</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><h6 class="dropdown-header">Accesos directos</h6></li>
+                    <li><a class="dropdown-item" href="admin-panel.html"><i class="fas fa-store-alt me-2"></i>Panel de Minimarket</a></li>
+                </ul>
+            </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container py-5">
+        <div class="login-container">
+            <div class="text-center mb-4">
+                <div class="login-icon mb-2">👤</div>
+                <h1 class="text-green">Iniciar Sesión</h1>
+                <p class="text-muted">Selecciona tu tipo de usuario</p>
+            </div>
+
+            <!-- Selector de Tipo de Usuario (Tabs) -->
+            <ul class="nav nav-pills nav-justified mb-4" id="userTypeTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="cliente-tab" data-bs-toggle="pill" data-bs-target="#cliente-panel" type="button" role="tab" aria-controls="cliente-panel" aria-selected="true">
+                        <i class="fas fa-user me-2"></i>Cliente
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dueno-tab" data-bs-toggle="pill" data-bs-target="#dueno-panel" type="button" role="tab" aria-controls="dueno-panel" aria-selected="false">
+                        <i class="fas fa-store me-2"></i>Dueño de Minimarket
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Contenido de los Tabs -->
+            <div class="tab-content" id="userTypeTabContent">
+                <!-- Panel de Cliente -->
+                <div class="tab-pane fade show active" id="cliente-panel" role="tabpanel" aria-labelledby="cliente-tab">
+                    <form id="clienteLoginForm" onsubmit="iniciarSesionCliente(event)">
+                        <div class="mb-3">
+                            <label for="emailCliente" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="emailCliente" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="passwordCliente" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="passwordCliente" required>
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberCliente">
+                            <label class="form-check-label" for="rememberCliente">Recordarme</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-green btn-lg w-100">Iniciar Sesión</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p><a href="#" class="text-green">¿Olvidaste tu contraseña?</a></p>
+                        <p>¿No tienes una cuenta? <a href="registro.html" class="text-green">Regístrate aquí</a></p>
+                    </div>
+                </div>
+
+                <!-- Panel de Dueño de Minimarket -->
+                <div class="tab-pane fade" id="dueno-panel" role="tabpanel" aria-labelledby="dueno-tab">
+                    <form id="duenoLoginForm" onsubmit="iniciarSesionDueno(event)">
+                        <div class="mb-3">
+                            <label for="emailDueno" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="emailDueno" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="passwordDueno" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="passwordDueno" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="minimarketId" class="form-label">ID de Minimarket</label>
+                            <input type="text" class="form-control" id="minimarketId" required>
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberDueno">
+                            <label class="form-check-label" for="rememberDueno">Recordarme</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-green btn-lg w-100">Acceder al Panel</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p><a href="#" class="text-green">¿Olvidaste tu contraseña?</a></p>
+                        <p>¿No eres dueño de minimarket? <a href="contacto.html" class="text-green">Contáctanos</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de cuentas demo -->
+            <div class="alert alert-info mt-4" role="alert">
+                <small>
+                    <strong>Cliente demo:</strong> cliente@villamarkets.cl / cliente123<br>
+                    <strong>Dueño demo:</strong> dueno@villamarkets.cl / dueno123 (ID: M001)<br>
+                    <strong>Admin:</strong> admin@villamarkets.cl / admin123
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Villa Markets</h5>
+                    <p>Tu plataforma para mini markets locales en todo Chile.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="minimarkets.html" class="text-white">Minimarkets</a></li>
+                        <li><a href="productos.html" class="text-white">Catálogo</a></li>
+                        <li><a href="soporte.html" class="text-white">Soporte</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contáctanos</h5>
+                    <p>contacto@villamarkets.cl</p>
+                    <p>+56 9 1234 5678</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center small mb-0">© 2025 Villa Markets. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Incluir Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Base de datos de usuarios demo
+        const usuariosDemo = [
+            {
+                correo: 'cliente@villamarkets.cl',
+                password: 'cliente123',
+                nombre: 'Cliente',
+                apellidos: 'Demo',
+                usuario: 'cliente_demo',
+                rol: 'cliente',
+                direccion: 'Av. Providencia 1234, Santiago',
+                telefono: '+56912345678',
+                dieta: 'Ninguna'
+            },
+            {
+                correo: 'dueno@villamarkets.cl',
+                password: 'dueno123',
+                nombre: 'Dueño',
+                apellidos: 'Minimarket',
+                usuario: 'dueno_demo',
+                rol: 'dueno',
+                minimarketId: 'M001',
+                nombreMinimarket: 'Minimarket Los Alpes',
+                direccion: 'Av. Las Condes 5678, Las Condes',
+                telefono: '+56945678912'
+            },
+            {
+                correo: 'admin@villamarkets.cl',
+                password: 'admin123',
+                nombre: 'Admin',
+                apellidos: 'Sistema',
+                usuario: 'admin',
+                rol: 'admin',
+                direccion: 'Oficina Central Villa Markets',
+                telefono: '+56987654321',
+                dieta: 'Ninguna'
+            }
+        ];
+
+        // Función para iniciar sesión como cliente
+        function iniciarSesionCliente(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('emailCliente').value;
+            const password = document.getElementById('passwordCliente').value;
+            
+            // Buscar si el usuario existe en nuestro array de demo
+            const usuario = usuariosDemo.find(u => (u.correo === email && u.password === password && (u.rol === 'cliente' || u.rol === 'admin')));
+            
+            if (usuario) {
+                // Guardar usuario en localStorage (sin la contraseña por seguridad)
+                const { password, ...usuarioSinPassword } = usuario;
+                localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioSinPassword));
+                localStorage.setItem('rolUsuario', usuario.rol);
+                
+                // Mensaje de éxito con SweetAlert2
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Bienvenido ' + usuario.nombre + '!',
+                    text: 'Has iniciado sesión correctamente',
+                    confirmButtonColor: '#2d8f3c',
+                    timer: 2000,
+                    timerProgressBar: true
+                }).then(() => {
+                    // Redirigir al menú principal
+                    window.location.href = 'menuprincipal.html';
+                });
+            } else {
+                // Mensaje de error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de acceso',
+                    text: 'Correo electrónico o contraseña incorrectos',
+                    confirmButtonColor: '#2d8f3c'
+                });
+            }
+        }
+
+        // Función para iniciar sesión como dueño de minimarket
+        function iniciarSesionDueno(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('emailDueno').value;
+            const password = document.getElementById('passwordDueno').value;
+            const minimarketId = document.getElementById('minimarketId').value;
+            
+            // Buscar si el usuario existe y es dueño de minimarket
+            const usuario = usuariosDemo.find(u => 
+                u.correo === email && 
+                u.password === password && 
+                (u.rol === 'dueno' || u.rol === 'admin') &&
+                (!u.minimarketId || u.minimarketId === minimarketId)
+            );
+            
+            if (usuario) {
+                // Guardar usuario en localStorage (sin la contraseña por seguridad)
+                const { password, ...usuarioSinPassword } = usuario;
+                localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioSinPassword));
+                localStorage.setItem('rolUsuario', usuario.rol);
+                
+                // Si es la primera vez, inicializar productos
+                if (!localStorage.getItem('productos')) {
+                    // Datos de ejemplo para productos
+                    const productosIniciales = [
+                        {
+                            id: 1,
+                            nombre: 'Arroz Premium',
+                            categoria: 'Abarrotes',
+                            precio: 1200,
+                            stock: 50,
+                            minimarketId: 'M001',
+                            imagen: 'img/productos/arroz.jpg',
+                            descripcion: 'Arroz grano largo de calidad premium.'
+                        },
+                        {
+                            id: 2,
+                            nombre: 'Aceite Vegetal',
+                            categoria: 'Abarrotes',
+                            precio: 2500,
+                            stock: 30,
+                            minimarketId: 'M001',
+                            imagen: 'img/productos/aceite.jpg',
+                            descripcion: 'Aceite vegetal 100% natural, 1 litro.'
+                        },
+                        {
+                            id: 3,
+                            nombre: 'Leche Deslactosada',
+                            categoria: 'Lácteos',
+                            precio: 1300,
+                            stock: 25,
+                            minimarketId: 'M001',
+                            imagen: 'img/productos/leche.jpg',
+                            descripcion: 'Leche deslactosada 1 litro.'
+                        }
+                    ];
+                    
+                    localStorage.setItem('productos', JSON.stringify(productosIniciales));
+                }
+                
+                // Mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Bienvenido al Panel de Administración!',
+                    text: 'Accediendo a tu panel de minimarket...',
+                    confirmButtonColor: '#2d8f3c',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Redirigir al panel de administración
+                    window.location.href = 'admin-panel.html';
+                });
+            } else {
+                // Mensaje de error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de acceso',
+                    text: 'Credenciales incorrectas o ID de minimarket no válido',
+                    confirmButtonColor: '#2d8f3c'
+                });
+            }
+        }
+
+        // Compatibilidad con la función original para no romper integraciones existentes
+        function iniciarSesion(event) {
+            event.preventDefault();
+            iniciarSesionCliente(event);
+        }
+        
+        // Toggle para mostrar/ocultar contraseña
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si ya hay sesión iniciada
+            const usuarioLogueado = localStorage.getItem('usuarioLogueado');
+            if (usuarioLogueado) {
+                const usuario = JSON.parse(usuarioLogueado);
+                const rol = usuario.rol;
+                
+                // Mostrar mensaje y redirigir según el rol
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Ya has iniciado sesión',
+                    text: 'Redirigiendo a tu área correspondiente...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => {
+                    if (rol === 'dueno' || rol === 'admin') {
+                        window.location.href = 'admin-panel.html';
+                    } else {
+                        window.location.href = 'menuprincipal.html';
+                    }
+                });
+            }
+            
+            // Agregar botones para mostrar/ocultar contraseña
+            const passwordInputs = [
+                document.getElementById('passwordCliente'),
+                document.getElementById('passwordDueno')
+            ];
+            
+            passwordInputs.forEach((input, index) => {
+                if (!input) return; // Si no existe el input, saltar
+                
+                // Crear el botón para mostrar/ocultar
+                const toggleButton = document.createElement('button');
+                toggleButton.type = 'button';
+                toggleButton.className = 'btn btn-outline-secondary toggle-password';
+                toggleButton.innerHTML = '<i class="fas fa-eye"></i>';
+                toggleButton.style.position = 'absolute';
+                toggleButton.style.right = '0';
+                toggleButton.style.top = '0';
+                toggleButton.style.height = '100%';
+                toggleButton.style.borderTopLeftRadius = '0';
+                toggleButton.style.borderBottomLeftRadius = '0';
+                
+                // Crear un contenedor para el input y el botón
+                const container = document.createElement('div');
+                container.className = 'position-relative';
+                
+                // Reemplazar el input original con el contenedor
+                input.parentNode.insertBefore(container, input);
+                container.appendChild(input);
+                container.appendChild(toggleButton);
+                
+                // Agregar evento al botón
+                toggleButton.addEventListener('click', function() {
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    
+                    const icon = this.querySelector('i');
+                    if (type === 'text') {
+                        icon.className = 'fas fa-eye-slash';
+                    } else {
+                        icon.className = 'fas fa-eye';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

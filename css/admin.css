@@ -1,0 +1,198 @@
+/**
+ * admin.css - Estilos para el panel de administración
+ * 
+ * Estilos específicos para el panel de administración de dueños de minimarkets
+ */
+
+/* Variables específicas para el panel admin */
+:root {
+  --admin-sidebar-bg: #f8f9fa;
+  --admin-highlight: #4caf50;
+  --admin-highlight-hover: #388e3c;
+  --admin-text: #495057;
+  --admin-border: #dee2e6;
+  --admin-card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --admin-header-height: 60px;
+}
+
+/* Estilo para links activos en el menú lateral */
+.list-group-item.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.list-group-item.active:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* Tarjetas con estadísticas */
+.stats-card {
+  transition: transform 0.2s;
+  border-radius: var(--border-radius);
+  box-shadow: var(--admin-card-shadow);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+}
+
+.stats-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+/* Estilos para tablas */
+.table thead th {
+  border-top: none;
+  border-bottom: 2px solid var(--color-primary);
+  color: var(--admin-text);
+  font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Personalización de badges */
+.badge.bg-warning {
+  color: #212529;
+}
+
+/* Personalización del sidebar */
+@media (min-width: 992px) {
+  .sidebar-sticky {
+    position: sticky;
+    top: calc(var(--admin-header-height) + 1rem);
+    height: calc(100vh - var(--admin-header-height) - 2rem);
+    overflow-y: auto;
+  }
+}
+
+/* Estilo para las tarjetas de productos */
+.product-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+  margin-bottom: 1rem;
+}
+
+.product-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+}
+
+.product-card .card-img-top {
+  height: 160px;
+  object-fit: cover;
+}
+
+.product-featured {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 207, 1, 0.9);
+  color: #212529;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Estilo para el formulario de productos */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.25rem rgba(45, 143, 60, 0.25);
+}
+
+/* Vista previa de imagen */
+.img-thumbnail {
+  padding: 0.25rem;
+  background-color: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--border-radius);
+  max-width: 100%;
+  height: auto;
+}
+
+/* Clases de utilidad */
+.text-green {
+  color: var(--color-primary);
+}
+
+.bg-green {
+  background-color: var(--color-primary);
+}
+
+.btn-green {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.btn-green:hover, .btn-green:focus {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: white;
+}
+
+/* Personalización de modales */
+.modal-header.bg-green, .modal-header.bg-primary {
+  color: white;
+}
+
+.modal-header .btn-close-white {
+  filter: brightness(0) invert(1);
+}
+
+/* Estilos para DataTables */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border-color: var(--color-primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: var(--color-primary-light) !important;
+  color: white !important;
+  border-color: var(--color-primary-light) !important;
+}
+
+/* Estilos para el botón de acciones en tablas */
+.btn-action {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Estado de carga para botones */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading:after {
+  content: '';
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: 50%;
+  left: 50%;
+  margin-top: -0.5rem;
+  margin-left: -0.5rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
